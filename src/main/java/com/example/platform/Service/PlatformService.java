@@ -31,6 +31,7 @@ public class PlatformService {
     InvestorRepository investorRepository;
 
 
+
     public PlatformService(PlatformRepository platformRepository) {
         this.platformRepository = platformRepository;
     }

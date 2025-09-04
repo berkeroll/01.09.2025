@@ -13,6 +13,7 @@ import com.example.platform.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -44,14 +45,8 @@ public class PlatformController {
     }
 
 
-//    @GetMapping // Bütün platformları listeleme ENTİTY İLE
-//    public List<Platform> getAllPlatforms() {
-//        // Aktif platformları çekiyoruz
-//        List<Platform> platforms = platformService.findGetAllStatus();
-//        return platforms;
-//    }
-
-        @GetMapping // Bütün platformları listeleme DTO İLE
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping // Bütün platformları listeleme DTO İLE
     public List<PlatformDto> getAllPlatforms() {
         // Aktif platformları çekiyoruz
         List<Platform> platforms = platformService.findGetAllStatus();
@@ -64,7 +59,7 @@ public class PlatformController {
     }
 
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}") //İD YE GÖRE PLATFORM LİSTELEME
     public ResponseEntity<Platform> getPlatformById(@PathVariable Long id) {
         Optional<Platform> platformOptional = platformService.findById(id);
@@ -75,34 +70,6 @@ public class PlatformController {
             return ResponseEntity.notFound().build(); // Eğer platform yoksa 404 döner
         }
     }
-
-
-//    @PutMapping("/v1/{id}") //NULL OLUŞMUŞ APİKEYE APİ ATAMA
-//    public ResponseEntity<?> apiKey(@PathVariable Long id) {
-//        Optional<Platform> optionalPlatform = platformService.findById(id);
-//
-//        if (optionalPlatform.isPresent()) {
-//            Platform platform = optionalPlatform.get();
-//
-//
-//            if (platform.getApiKey() != null) {
-//                return ResponseEntity
-//                        .status(HttpStatus.BAD_REQUEST)
-//                        .body("Bu platformun zaten bir API Key'i var.");
-//            }
-//
-//
-//            platform.setApiKey(UUID.randomUUID());
-//
-//            Platform updatedPlatform = platformService.save(platform);
-//            return ResponseEntity.ok(updatedPlatform);
-//
-//        } else {
-//            return ResponseEntity
-//                    .status(HttpStatus.NOT_FOUND)
-//                    .body("Platform bulunamadı: ID = " + id);
-//        }
-//    }
 
     @PutMapping("/v1/{id}/refresh") //VAR OLAN APİKEYİ REFRESHLEME
     public ResponseEntity<?> refreshApiKey(@PathVariable Long id) {
@@ -124,12 +91,7 @@ public class PlatformController {
     }
 
 
-//    @PostMapping  //YENİ PLATFORM OLUŞTURMA
-//    public Platform createPlatform(@RequestBody Platform platformUpdated) {
-//
-//        return platformService.save(platformUpdated);
-//    }
-
+@PreAuthorize("hasRole('ADMIN')")
     @PostMapping  //YENİ PLATFORM OLUŞTURMA
 
     public ResponseEntity<PlatformDto> createPlatform(@RequestBody PlatformDto platformDto) {
@@ -151,7 +113,7 @@ public class PlatformController {
         return ResponseEntity.ok(savedDto);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{platformId}/cryptos/{cryptoId}") //PLATFORMA KRİPTO EKLEME
     public ResponseEntity<Platform> addCryptoToPlatform(
             @PathVariable Long platformId,
@@ -161,7 +123,7 @@ public class PlatformController {
         Platform updated = platformService.addCryptoToPlatform(platformId, cryptoId);
         return ResponseEntity.ok(updated);
     }
-
+    @PreAuthorize("permitAll()")
     @PostMapping("/login") //APİKEY İLE TOKEN OLUŞTURULUR
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String apiKeyStr = body.get("apiKey");
@@ -213,46 +175,8 @@ public class PlatformController {
     }
 
 
-//    @PutMapping("update/{id}") //İSTENİLEN PLATFORMUN ALANLARINI GÜNCELLEME
-//
-//    public ResponseEntity<PlatformDto> updateInvestor(@PathVariable Long id, @RequestBody Platform updatedPlatform) {
-//        Optional<Platform> platformOptional = platformService.findById(id);
-//
-//        if (platformOptional.isPresent()) {
-//            Platform platform = platformOptional.get();
-//            List<Investor> investors = investorRepository.findByPlatform(platform);
-//
-//            if (updatedPlatform.getPlatformTitle() != null) {
-//                platform.setPlatformTitle(updatedPlatform.getPlatformTitle());
-//            }
-//            if (updatedPlatform.getPlatformCode() != null) {
-//                platform.setPlatformCode(updatedPlatform.getPlatformCode());
-//            }
-//            if (updatedPlatform.getTaxNo() != null && !updatedPlatform.getTaxNo().equals(platform.getTaxNo())) {
-//                throw new IllegalArgumentException("taxNo değiştirilemez");
-//            }
-//            if (updatedPlatform.getState() != null) {
-//                platform.setState(updatedPlatform.getState());
-//                if (platform.getState() == false) {
-//                    for (Investor inv : investors) {
-//                        inv.setStatus("Pasif");
-//                    }
-//                } else {
-//                    for (Investor inv : investors) {
-//                        inv.setStatus("Aktif");
-//                    }
-//                }
-//                investorRepository.saveAll(investors);
-//
-//            }
-//            Platform savedPlatform = platformService.updatePlatform(platform);
-//            PlatformDto response = new PlatformDto(investors, savedPlatform); //set edilmesi gereken parametrelet vardı onun hatası
-//            return ResponseEntity.ok(response);
-//        }
-//        return ResponseEntity.notFound().build();
-//    }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("update/{id}")
     public ResponseEntity<PlatformDto> updatePlatform(
             @PathVariable Long id,
@@ -298,7 +222,7 @@ public class PlatformController {
 
 
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}") //İSTENİLEN PLATFORMUN SİLİNMESİ
     public ResponseEntity<Void> deletePlatform(@PathVariable Long id) {
         platformService.deleteById(id);

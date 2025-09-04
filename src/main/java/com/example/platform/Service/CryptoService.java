@@ -44,7 +44,7 @@ public class CryptoService {
 
     }
 
-    
+
 
     // Crypto → CryptoDto
     public CryptoDto convertToCryptoDto(Crypto crypto) {

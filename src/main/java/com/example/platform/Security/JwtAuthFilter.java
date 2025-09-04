@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -36,23 +37,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response); // Token yoksa geç
+            filterChain.doFilter(request, response); // Token yoksa devam et
             return;
         }
 
-        String jwtToken = authHeader.substring(7); // "Bearer " kısmını kes
+        String jwtToken = authHeader.substring(7);
 
         try {
             Claims claims = jwtUtil.extractAllClaims(jwtToken);
 
-            String apiKey = claims.getSubject();
-            if (apiKey != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                apiKey,
-                                null,
-                                Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
-                        );
+            String subject = claims.getSubject(); // kullanıcı için username, platform için apiKey
+            List<String> roles = claims.get("role", List.class);
+
+            if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UsernamePasswordAuthenticationToken authToken;
+
+                if (claims.containsKey("platformId")) {
+                    // PLATFORM token'ı
+                    authToken = new UsernamePasswordAuthenticationToken(
+                            subject, // apiKey
+                            null,
+                            Collections.singletonList(new SimpleGrantedAuthority("PLATFORM"))
+                    );
+                } else {
+                    // USER token'ı
+                    authToken = new UsernamePasswordAuthenticationToken(
+                            subject, // username
+                            null,
+                            roles.stream()
+                                    .map(SimpleGrantedAuthority::new)
+                                    .toList()
+                    );
+                }
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
@@ -73,4 +89,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 }

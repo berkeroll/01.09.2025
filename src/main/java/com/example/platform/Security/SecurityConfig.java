@@ -5,6 +5,7 @@ import com.example.platform.Security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.SessionMan
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -38,14 +40,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/platforms/login",
                                 "/api/platforms/v1/**",
-                                "/api/platforms",
-                                "/api/**",
                                 "/users/logintoken",
                                 "/users/logintoken2",
                                 "/users/login"
                         ).permitAll()
-//                        .anyRequest().hasAnyAuthority("PLATFORM", "ROLE_ADMIN", "ROLE_USER")
-                                .anyRequest().permitAll()
+
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

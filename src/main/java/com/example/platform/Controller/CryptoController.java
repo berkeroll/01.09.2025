@@ -9,6 +9,7 @@ import com.example.platform.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@PreAuthorize("hasAuthority('PLATFORM')")
 @RequestMapping("/api/crypto")
 public class CryptoController {
     @Autowired
@@ -28,7 +30,7 @@ public class CryptoController {
     PlatformRepository platformRepository;
 
 
-    @PostMapping
+    @PostMapping  //Kripto Varlık Ekleme
     public CryptoDto addCrypto(@RequestBody CryptoDto cryptoDto) {
 
         Crypto crypto=new Crypto();
@@ -46,7 +48,7 @@ public class CryptoController {
     }
 
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{id}")  //Kripto Varlık Düzenleme id ile
     public ResponseEntity<CryptoDto> updateCrypto(@PathVariable Long id, @RequestBody CryptoDto updatedCrypto, @RequestHeader("Authorization") String token) {
 
         if (token == null || token.isEmpty()) {
@@ -94,7 +96,7 @@ public class CryptoController {
 //        return cryptoService.findAllCrypto();
 //    }
 
-    @GetMapping
+    @GetMapping  //Tüm kripto varlıkları görüntüleme
     public List<CryptoDto> findAllCrypto() {
         List<Crypto> cryptos = cryptoService.findAllCrypto();
 
