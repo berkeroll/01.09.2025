@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@PreAuthorize("hasAuthority('PLATFORM')")
 @RequestMapping("/api/crypto")
 public class CryptoController {
     @Autowired
@@ -29,7 +28,7 @@ public class CryptoController {
     @Autowired
     PlatformRepository platformRepository;
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping  //Kripto Varlık Ekleme
     public CryptoDto addCrypto(@RequestBody CryptoDto cryptoDto) {
 
@@ -47,7 +46,7 @@ public class CryptoController {
 
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")  //Kripto Varlık Düzenleme id ile
     public ResponseEntity<CryptoDto> updateCrypto(@PathVariable Long id, @RequestBody CryptoDto updatedCrypto, @RequestHeader("Authorization") String token) {
 
@@ -91,10 +90,6 @@ public class CryptoController {
         return ResponseEntity.notFound().build();
     }
 
-//    @GetMapping
-//    public List<Crypto> findAllCrypto() {
-//        return cryptoService.findAllCrypto();
-//    }
 
     @GetMapping  //Tüm kripto varlıkları görüntüleme
     public List<CryptoDto> findAllCrypto() {

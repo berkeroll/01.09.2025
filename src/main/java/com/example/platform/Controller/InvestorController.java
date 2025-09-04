@@ -30,7 +30,7 @@ public class InvestorController {
         this.platformService = platformService;
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping //Kullanılacak //Kullanıldı
+    @GetMapping //Tüm İnvestorları Listeleme
     public List<InvestorDto> getAllInvestors() {
 
         List<Investor> investors = investorService.findAll();
@@ -43,14 +43,8 @@ public class InvestorController {
     }
 
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Investor> getInvestorById(@PathVariable Long id) {
-//        return investorService.findById(id)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") //ID ye göre investor listeleme
     public ResponseEntity<InvestorDto> getInvestorById(@PathVariable Long id) {
         return investorService.findById(id)
                 .map(investorService::convertToInvestorDto)
@@ -58,7 +52,7 @@ public class InvestorController {
                 .orElse(ResponseEntity.notFound().build());
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/platform/{platformId}") //KULLANILACAK//KULLANILDI
+    @GetMapping("/platform/{platformId}") //Belirlitilen Platforma kayıtlı olan investorları listeleme
     public List<InvestorDto> getInvestorsByPlatformId(@PathVariable Long platformId) {
         List<Investor> investors = investorService.findByPlatformId(platformId);
 
@@ -71,7 +65,7 @@ public class InvestorController {
 
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/checkmernis") //Kullanılacak //Kullanıldı
+    @PostMapping("/checkmernis") //Sistemde bu tc kimlik ile yatırımcı var mı kontrol
     public ResponseEntity<?> checkMernis(@RequestBody InvestorDto investorDto) {
 
         return investorService.checkInvestorByMernis(investorDto.getMernis());
@@ -79,7 +73,7 @@ public class InvestorController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/saveinvestor")  //KULLANILACAK//KULLANILDI
+    @PostMapping("/saveinvestor")  //Token içerisindeki platform bilgisine göre investor kaydetme
     public ResponseEntity<InvestorDto> saveInvestor(@RequestBody InvestorDto investorDto,
                                                  @RequestHeader("Authorization") String token) {
         System.out.println("Token raw: '" + token + "'");
@@ -95,7 +89,7 @@ public class InvestorController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/deactive/{id}")
+    @PutMapping("/deactive/{id}") //Kullanıcı silme (soft delete)
     public ResponseEntity<Void> deleteInvestor(@PathVariable Long id) {
         investorService.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -107,7 +101,7 @@ public class InvestorController {
         return ResponseEntity.noContent().build();
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")  //Kullanıcı Bilgileri Güncelleme //Frontend tarafında kullanılmadı
     public ResponseEntity<Investor> updateInvestor(@PathVariable Long id, @RequestBody Investor updatedInvestor) {
         Optional<Investor> investorOptional = investorService.findById(id);
 

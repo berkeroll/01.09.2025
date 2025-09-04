@@ -55,14 +55,6 @@ public class Crypto {
     }
 
 
-//    public List<PlatformCrypto> getPlatformCryptos() {
-//        return platformCryptos;
-//    }
-//
-//    public void setPlatformCryptos(List<PlatformCrypto> platformCryptos) {
-//        this.platformCryptos = platformCryptos;
-//    }
-
     public String getCoinsTitle() {
         return coinsTitle;
     }

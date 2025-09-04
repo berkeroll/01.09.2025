@@ -95,13 +95,6 @@ public class InvestorService {
 
 
 
-
-
-
-
-
-
-
     // Platform DTO (Investor ve Crypto alanları boş)
     private PlatformDto convertToPlatformDtoWithoutInvestorsAndCryptos(Platform platform) {
         PlatformDto dto = new PlatformDto();
@@ -153,14 +146,6 @@ public class InvestorService {
         dto.setInvestors(Collections.emptySet());
         return dto;
     }
-
-
-
-
-
-
-
-
 
 
 

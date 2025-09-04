@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "investor",uniqueConstraints = @UniqueConstraint(columnNames = {"mernis", "platform_id"}))
+@Table(name = "investor", uniqueConstraints = @UniqueConstraint(columnNames = {"mernis", "platform_id"}))
 public class Investor {
 
     @Id
@@ -26,28 +26,25 @@ public class Investor {
     private String mernis;
 
     @ManyToOne
-    @JoinColumn(name = "platform_id",referencedColumnName = "platform_id",nullable = true)  // investor tablosundaki foreign key sütunu
+    @JoinColumn(name = "platform_id", referencedColumnName = "platform_id", nullable = true)
+    // investor tablosundaki foreign key sütunu
     @JsonBackReference("investor_ref1")
     private Platform platform;
 
 
     @ManyToMany(mappedBy = "investors")
     @JsonBackReference("investor_ref2")
-    private Set<Crypto> cryptos=new HashSet<>();
+    private Set<Crypto> cryptos = new HashSet<>();
 
-    @Column(name = "sicil_no",unique = false,length = 8)
+    @Column(name = "sicil_no", unique = false, length = 8)
     private String sicilNo;
     @Column(name = "state")
-    private String state="A";
+    private String state = "A";
 
-    @Column(name="platformName")
+    @Column(name = "platformName")
     private String platformName;
     @Column(name = "platformStatus")
-    private String status="Aktif";
-
-
-
-
+    private String status = "Aktif";
 
 
     public String getName() {
@@ -74,7 +71,6 @@ public class Investor {
         this.mernis = mernis;
     }
 
-
     public Long getId() {
         return id;
     }
@@ -98,10 +94,6 @@ public class Investor {
     public void setSicilNo(String sicilNo) {
         this.sicilNo = sicilNo;
     }
-
-
-
-
 
     public String getState() {
         return state;

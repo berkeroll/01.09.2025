@@ -62,7 +62,7 @@ public class PlatformService {
         // Investor listesi
         if (platform.getInvestors() != null) {
             List<InvestorDto> investorDtos = platform.getInvestors().stream()
-                    .map(this::convertToInvestorDtoWithoutPlatform) // sonsuz döngü kırılıyor
+                    .map(this::convertToInvestorDtoWithoutPlatform)
                     .collect(Collectors.toList());
             dto.setInvestors(investorDtos);
         } else {
@@ -81,8 +81,6 @@ public class PlatformService {
 
         return dto;
     }
-
-
 
 
 
@@ -144,17 +142,6 @@ public class PlatformService {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
     public Platform save(Platform platform) {
 
         if (platformRepository.existsByPlatformTitleAndRecordStatus(platform.getPlatformTitle(),"A")) {
@@ -207,11 +194,11 @@ public class PlatformService {
     // Platform'a crypto ekleme
     @Transactional
     public Platform addCryptoToPlatform(Long platformId, Long cryptoId) {
-        // Platform getir
+
         Platform platform = platformRepository.findById(platformId)
                 .orElseThrow(() -> new RuntimeException("Platform bulunamadı: " + platformId));
 
-        // Crypto getir
+
         Crypto crypto = cryptoRepository.findById(cryptoId)
                 .orElseThrow(() -> new RuntimeException("Crypto bulunamadı: " + cryptoId));
 

@@ -46,13 +46,13 @@ public class PlatformController {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping // Bütün platformları listeleme DTO İLE
+    @GetMapping // Tüm platformları listeleme
     public List<PlatformDto> getAllPlatforms() {
         // Aktif platformları çekiyoruz
         List<Platform> platforms = platformService.findGetAllStatus();
             // Platform listelerini DTO’ya çeviriyoruz
             List<PlatformDto> platformDtos = platforms.stream()
-                    .map(platformService::convertToPlatformDto) // yukarıdaki convertToPlatformDto metodunu kullanıyoruz
+                    .map(platformService::convertToPlatformDto)
                     .collect(Collectors.toList());
 
             return platformDtos;
@@ -97,17 +97,17 @@ public class PlatformController {
     public ResponseEntity<PlatformDto> createPlatform(@RequestBody PlatformDto platformDto) {
 
 
-        // DTO → Entity
+        // DTO -> Entity
         Platform platform = new Platform();
         platform.setPlatformTitle(platformDto.getPlatformTitle());
         platform.setPlatformCode(platformDto.getPlatformCode());
         platform.setTaxNo(platformDto.getTaxNo());
         platform.setState(platformDto.getState());
 
-        // Kaydet
+
         Platform savedPlatform = platformService.save(platform);
 
-        // Entity → DTO
+        // Entity -> DTO
         PlatformDto savedDto = platformService.convertToPlatformDto(savedPlatform);
 
         return ResponseEntity.ok(savedDto);

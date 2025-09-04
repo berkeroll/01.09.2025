@@ -42,19 +42,7 @@ public class UsersController {
         return ResponseEntity.ok(Map.of("message", "Kullanıcı kaydedildi"));
     }
 
-    // Login endpointi
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UsersDto body) {
-        String username = body.getUsername();
-        String password = body.getPassword();
-
-        boolean success = usersService.checkLogin(username, password);
-        if (success) {
-            return ResponseEntity.ok(Map.of("message", "Login başarılı"));
-        } else {
-            return ResponseEntity.status(401).body(Map.of("message", "Kullanıcı adı veya şifre hatalı"));
-        }
-    }
+   //Login Endpointi
     @PostMapping("/logintoken2")
     public Map<String,String > loginToken2(@RequestBody UsersDto usersDto)
     {
@@ -66,8 +54,6 @@ public class UsersController {
         String token=jwtUtil.generateToken(username,roles);
         return  Map.of("token",token);
     }
-
-
 
 
 
