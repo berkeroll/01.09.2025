@@ -8,6 +8,7 @@ import com.example.platform.model.Crypto;
 import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class InvestorController {
         this.investorService = investorService;
         this.platformService = platformService;
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping //Kullanılacak //Kullanıldı
     public List<InvestorDto> getAllInvestors() {
 
@@ -48,7 +49,7 @@ public class InvestorController {
 //                .map(ResponseEntity::ok)
 //                .orElse(ResponseEntity.notFound().build());
 //    }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<InvestorDto> getInvestorById(@PathVariable Long id) {
         return investorService.findById(id)
@@ -56,7 +57,7 @@ public class InvestorController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/platform/{platformId}") //KULLANILACAK//KULLANILDI
     public List<InvestorDto> getInvestorsByPlatformId(@PathVariable Long platformId) {
         List<Investor> investors = investorService.findByPlatformId(platformId);
@@ -69,7 +70,7 @@ public class InvestorController {
 
 
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/checkmernis") //Kullanılacak //Kullanıldı
     public ResponseEntity<?> checkMernis(@RequestBody InvestorDto investorDto) {
 
@@ -77,7 +78,7 @@ public class InvestorController {
 
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/saveinvestor")  //KULLANILACAK//KULLANILDI
     public ResponseEntity<InvestorDto> saveInvestor(@RequestBody InvestorDto investorDto,
                                                  @RequestHeader("Authorization") String token) {
@@ -93,7 +94,7 @@ public class InvestorController {
         return ResponseEntity.ok(savedDto);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/deactive/{id}")
     public ResponseEntity<Void> deleteInvestor(@PathVariable Long id) {
         investorService.deleteById(id);
@@ -105,7 +106,7 @@ public class InvestorController {
         investorService.activeById(id);
         return ResponseEntity.noContent().build();
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Investor> updateInvestor(@PathVariable Long id, @RequestBody Investor updatedInvestor) {
         Optional<Investor> investorOptional = investorService.findById(id);
