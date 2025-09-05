@@ -4,9 +4,11 @@ package com.example.platform.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.Where;
 
 import java.util.*;
 
+@Where(clause = "record_status = 'A'")
 @Entity
 public class Platform {
 

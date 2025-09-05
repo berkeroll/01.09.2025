@@ -38,15 +38,14 @@ public class PlatformService {
 
 
     public List<Platform> findGetAllStatus() {
-        return platformRepository.findByRecordStatus("A");
+        return platformRepository.findAll();
     }
 
     public Optional<Platform> findById(Long id) {
         return platformRepository.findById(id);
     }
 
-
-
+    
 
     // Platform → PlatformDto
     public PlatformDto convertToPlatformDto(Platform platform) {

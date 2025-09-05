@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.annotations.Where;
 
 import java.util.HashSet;
 import java.util.Set;
-
+@Where(clause = "state = 'A'")
 @Entity
 @Table(name = "investor", uniqueConstraints = @UniqueConstraint(columnNames = {"mernis", "platform_id"}))
 public class Investor {
