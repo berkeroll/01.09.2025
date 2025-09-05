@@ -28,7 +28,7 @@ public class CryptoController {
     @Autowired
     PlatformRepository platformRepository;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping  //Kripto Varlık Ekleme
     public CryptoDto addCrypto(@RequestBody CryptoDto cryptoDto) {
 
@@ -46,7 +46,7 @@ public class CryptoController {
 
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/update/{id}")  //Kripto Varlık Düzenleme id ile
     public ResponseEntity<CryptoDto> updateCrypto(@PathVariable Long id, @RequestBody CryptoDto updatedCrypto, @RequestHeader("Authorization") String token) {
 

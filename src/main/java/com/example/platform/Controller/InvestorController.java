@@ -1,5 +1,6 @@
 package com.example.platform.Controller;
 
+import com.example.platform.Repository.PlatformRepository;
 import com.example.platform.Service.InvestorService;
 import com.example.platform.Service.PlatformService;
 import com.example.platform.dto.CryptoDto;
@@ -7,8 +8,11 @@ import com.example.platform.dto.InvestorDto;
 import com.example.platform.model.Crypto;
 import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,13 +27,14 @@ public class InvestorController {
 
     private final InvestorService investorService;
     private final PlatformService platformService;
+    private PlatformRepository platformRepository;
 
 
     public InvestorController(InvestorService investorService, PlatformService platformService) {
         this.investorService = investorService;
         this.platformService = platformService;
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping //Tüm İnvestorları Listeleme
     public List<InvestorDto> getAllInvestors() {
 
@@ -43,7 +48,7 @@ public class InvestorController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/{id}") //ID ye göre investor listeleme
     public ResponseEntity<InvestorDto> getInvestorById(@PathVariable Long id) {
         return investorService.findById(id)
@@ -51,7 +56,7 @@ public class InvestorController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/platform/{platformId}") //Belirlitilen Platforma kayıtlı olan investorları listeleme
     public List<InvestorDto> getInvestorsByPlatformId(@PathVariable Long platformId) {
         List<Investor> investors = investorService.findByPlatformId(platformId);
@@ -64,7 +69,7 @@ public class InvestorController {
 
 
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/checkmernis") //Sistemde bu tc kimlik ile yatırımcı var mı kontrol
     public ResponseEntity<?> checkMernis(@RequestBody InvestorDto investorDto) {
 
@@ -72,23 +77,23 @@ public class InvestorController {
 
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/saveinvestor")  //Token içerisindeki platform bilgisine göre investor kaydetme
-    public ResponseEntity<InvestorDto> saveInvestor(@RequestBody InvestorDto investorDto,
-                                                 @RequestHeader("Authorization") String token) {
-        System.out.println("Token raw: '" + token + "'");
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping("{id}/saveinvestor") //Platform Seçilerek yatırımcı kayıt etme
+    public ResponseEntity<InvestorDto> saveInvestor(@RequestBody InvestorDto investorDto,@PathVariable Long id) {
+
         Investor investor=new Investor();
         investor.setMernis(investorDto.getMernis());
         investor.setName(investorDto.getName());
         investor.setSurname(investorDto.getSurname());
 
 
-        Investor saved = investorService.saveInvestor(investor, token);
+        Investor saved = investorService.saveInvestor(investor, id);
         InvestorDto savedDto=investorService.convertToInvestorDto(saved);
         return ResponseEntity.ok(savedDto);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/deactive/{id}") //Kullanıcı silme (soft delete)
     public ResponseEntity<Void> deleteInvestor(@PathVariable Long id) {
         investorService.deleteById(id);
@@ -100,7 +105,7 @@ public class InvestorController {
         investorService.activeById(id);
         return ResponseEntity.noContent().build();
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{id}")  //Kullanıcı Bilgileri Güncelleme //Frontend tarafında kullanılmadı
     public ResponseEntity<Investor> updateInvestor(@PathVariable Long id, @RequestBody Investor updatedInvestor) {
         Optional<Investor> investorOptional = investorService.findById(id);

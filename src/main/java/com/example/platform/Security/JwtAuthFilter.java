@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,6 +35,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getServletPath();
+        if (path.equals("/users/logintoken2") ||
+                path.equals("/users/login") ||
+                path.equals("/api/platforms/login")||
+                path.equals("/api/investors/saveinvestor")
+
+        )
+        {
+            filterChain.doFilter(request, response);
+            return; // login endpoint'lerini JWT doğrulamasından muaf bırak
+        }
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -53,25 +65,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken;
 
                 if (claims.containsKey("platformId")) {
-                    // PLATFORM token'ı
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    if (roles != null && !roles.isEmpty()) {
+                        authorities.addAll(roles.stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .toList());
+                    }
+                    authToken = new UsernamePasswordAuthenticationToken(subject, null, authorities);
+                } else if (roles != null && !roles.isEmpty()) {
                     authToken = new UsernamePasswordAuthenticationToken(
-                            subject, // apiKey
+                            subject,
                             null,
-                            Collections.singletonList(new SimpleGrantedAuthority("PLATFORM"))
+                            roles.stream().map(SimpleGrantedAuthority::new).toList()
                     );
                 } else {
-                    // USER token'ı
-                    authToken = new UsernamePasswordAuthenticationToken(
-                            subject, // username
-                            null,
-                            roles.stream()
-                                    .map(SimpleGrantedAuthority::new)
-                                    .toList()
-                    );
+                    authToken = new UsernamePasswordAuthenticationToken(subject, null, Collections.emptyList());
                 }
+
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+
 
         } catch (ExpiredJwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

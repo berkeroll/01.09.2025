@@ -6,6 +6,7 @@ import com.example.platform.model.Users;
 import com.example.platform.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,6 +44,7 @@ public class UsersController {
     }
 
    //Login Endpointi
+    @PreAuthorize("permitAll()")
     @PostMapping("/logintoken2")
     public Map<String,String > loginToken2(@RequestBody UsersDto usersDto)
     {

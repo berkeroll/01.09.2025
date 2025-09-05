@@ -45,7 +45,7 @@ public class PlatformController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping // Tüm platformları listeleme
     public List<PlatformDto> getAllPlatforms() {
         // Aktif platformları çekiyoruz
@@ -59,7 +59,7 @@ public class PlatformController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/{id}") //İD YE GÖRE PLATFORM LİSTELEME
     public ResponseEntity<Platform> getPlatformById(@PathVariable Long id) {
         Optional<Platform> platformOptional = platformService.findById(id);
@@ -70,7 +70,7 @@ public class PlatformController {
             return ResponseEntity.notFound().build(); // Eğer platform yoksa 404 döner
         }
     }
-
+    @PreAuthorize("permitAll()")
     @PutMapping("/v1/{id}/refresh") //VAR OLAN APİKEYİ REFRESHLEME
     public ResponseEntity<?> refreshApiKey(@PathVariable Long id) {
         Optional<Platform> optionalPlatform = platformService.findById(id);
@@ -91,7 +91,7 @@ public class PlatformController {
     }
 
 
-@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping  //YENİ PLATFORM OLUŞTURMA
 
     public ResponseEntity<PlatformDto> createPlatform(@RequestBody PlatformDto platformDto) {
@@ -113,7 +113,7 @@ public class PlatformController {
         return ResponseEntity.ok(savedDto);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/{platformId}/cryptos/{cryptoId}") //PLATFORMA KRİPTO EKLEME
     public ResponseEntity<Platform> addCryptoToPlatform(
             @PathVariable Long platformId,
@@ -176,7 +176,7 @@ public class PlatformController {
 
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("update/{id}")
     public ResponseEntity<PlatformDto> updatePlatform(
             @PathVariable Long id,
@@ -222,7 +222,7 @@ public class PlatformController {
 
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}") //İSTENİLEN PLATFORMUN SİLİNMESİ
     public ResponseEntity<Void> deletePlatform(@PathVariable Long id) {
         platformService.deleteById(id);
