@@ -32,6 +32,7 @@ public class PlatformService {
 
 
 
+
     public PlatformService(PlatformRepository platformRepository) {
         this.platformRepository = platformRepository;
     }
@@ -178,16 +179,22 @@ public class PlatformService {
         }
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        Optional<Platform> platformOpt = platformRepository.findById(id);
-        if (platformOpt.isPresent()) {
-            Platform platform = platformOpt.get();
-            if (platform.getRecord_status().equals("A")) {
-                platform.setRecord_status("D");
-                platformRepository.save(platform);
-            } else if (platform.getRecord_status().equals("D")) {
-                throw new IllegalArgumentException("Bu kullanıcı zaten pasif durumda");
+        Platform platform = platformRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Platform bulunamadı"));
+
+        if ("A".equals(platform.getRecord_status())) {
+            platform.setRecord_status("D");
+
+            for (Investor investor : platform.getInvestors()) {
+                investor.setStatus("Pasif");
+                investor.setState("D");
             }
+
+            platformRepository.save(platform);
+        } else if ("D".equals(platform.getRecord_status())) {
+            throw new IllegalArgumentException("Bu platform zaten pasif durumda");
         }
     }
     // Platform'a crypto ekleme

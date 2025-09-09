@@ -41,9 +41,11 @@ public class InvestorService {
 
     public List<Investor> findAll() {
         List<Investor> investors = investorRepository.findAll();
+
         for (Investor inv : investors) {
 
-            if (inv.getPlatform() != null) {
+            if (inv.getPlatform() != null ) {
+
                 inv.setPlatformName(inv.getPlatform().getPlatformTitle());
             }
         }
