@@ -25,5 +25,6 @@ public interface InvestorRepository extends JpaRepository<Investor, Long > {
     List<Investor> findByState(String state);
     List<Investor> findByPlatform(Platform platform);
     List<Investor> findByStatus(String  status);
+    Optional<Investor> findBySicilNoAndPlatformId(String sicilNo,Long platformId);
 
 }

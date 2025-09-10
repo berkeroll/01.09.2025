@@ -61,11 +61,12 @@ public class PlatformController {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/{id}") //İD YE GÖRE PLATFORM LİSTELEME
-    public ResponseEntity<Platform> getPlatformById(@PathVariable Long id) {
+    public ResponseEntity<PlatformDto> getPlatformById(@PathVariable Long id) {
         Optional<Platform> platformOptional = platformService.findById(id);
 
         if (platformOptional.isPresent()) {
-            return ResponseEntity.ok(platformOptional.get());
+            PlatformDto platformDto=platformService.convertToPlatformDto(platformOptional.get());
+            return ResponseEntity.ok(platformDto);
         } else {
             return ResponseEntity.notFound().build(); // Eğer platform yoksa 404 döner
         }
