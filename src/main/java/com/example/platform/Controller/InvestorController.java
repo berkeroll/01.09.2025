@@ -9,6 +9,7 @@ import com.example.platform.model.Crypto;
 import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 //import java.util.UUID;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/investors")
 public class InvestorController {
@@ -27,13 +28,10 @@ public class InvestorController {
 
     private final InvestorService investorService;
     private final PlatformService platformService;
-    private PlatformRepository platformRepository;
+    private final PlatformRepository platformRepository;
 
 
-    public InvestorController(InvestorService investorService, PlatformService platformService) {
-        this.investorService = investorService;
-        this.platformService = platformService;
-    }
+
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping //Tüm İnvestorları Listeleme
     public List<InvestorDto> getAllInvestors() {

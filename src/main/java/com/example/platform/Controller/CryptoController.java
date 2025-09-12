@@ -7,6 +7,7 @@ import com.example.platform.dto.CryptoDto;
 import com.example.platform.model.Crypto;
 import com.example.platform.util.JwtUtil;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,18 +16,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/crypto")
 public class CryptoController {
-    @Autowired
-    CryptoService cryptoService;
-    @Autowired
-    CryptoRepository cryptoRepository;
-    @Autowired
-    JwtUtil jwtUtil;
-    @Autowired
-    PlatformRepository platformRepository;
+
+    private final CryptoService cryptoService;
+    private final CryptoRepository cryptoRepository;
+    private final JwtUtil jwtUtil;
+    private final PlatformRepository platformRepository;
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping  //Kripto Varlık Ekleme

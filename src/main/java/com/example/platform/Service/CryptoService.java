@@ -9,18 +9,19 @@ import com.example.platform.model.Crypto;
 import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 @Service
 public class CryptoService {
-    @Autowired
-    CryptoRepository cryptoRepository;
-    @Autowired
-    PlatformRepository platformRepository;
+
+    private final CryptoRepository cryptoRepository;
+
+    private final PlatformRepository platformRepository;
 
     public Crypto addCrypto(Crypto crypto)
     {

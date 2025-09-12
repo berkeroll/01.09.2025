@@ -10,6 +10,7 @@ import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
 import com.example.platform.model.Role;
 import com.example.platform.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,30 +20,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 //import java.util.UUID;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/platforms")
 public class PlatformController {
 
     private final PlatformService platformService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    CryptoRepository cryptoRepository;
-    @Autowired
-    UsersService usersService;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    InvestorRepository investorRepository;
+    private final JwtUtil jwtUtil;
+    private final CryptoRepository cryptoRepository;
+    private final UsersService usersService;
+    private final RoleRepository roleRepository;
+    private final InvestorRepository investorRepository;
 
 
 
-    public PlatformController(PlatformService platformService) {
-        this.platformService = platformService;
 
-    }
 
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -147,7 +139,7 @@ public class PlatformController {
                         .collect(Collectors.toList());
 
                 Date issuedAt = new Date();
-                Date expiresAt = new Date(issuedAt.getTime() + JwtUtil.EXPIRATION_TIME);
+                Date expiresAt = new Date(issuedAt.getTime() + jwtUtil.getExpirationTime());
 
                 String jwt = jwtUtil.generateTokenWithApiKey(apiKey, platform, issuedAt, expiresAt, roles);
 

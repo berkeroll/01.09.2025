@@ -10,6 +10,7 @@ import com.example.platform.model.Crypto;
 import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
 import com.example.platform.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
@@ -18,27 +19,22 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class InvestorService {
 
     private final InvestorRepository investorRepository;
     private final PlatformRepository platformRepository;
-    private JwtUtil jwtUtil;
-    @Autowired
-    CryptoRepository cryptoRepository;
-    @Autowired
-    PlatformService platformService;
+    private final JwtUtil jwtUtil;
+    private final CryptoRepository cryptoRepository;
+    private final PlatformService platformService;
 
 
 
 
     private Random random = new Random();
 
-    public InvestorService(InvestorRepository investorRepository, PlatformRepository platformRepository, JwtUtil jwtUtil) {
-        this.investorRepository = investorRepository;
-        this.platformRepository = platformRepository;
-        this.jwtUtil = jwtUtil;
-    }
+
 
     public List<Investor> findAll() {
         List<Investor> investors = investorRepository.findAll();

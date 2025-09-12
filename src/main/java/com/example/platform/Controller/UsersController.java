@@ -4,6 +4,7 @@ import com.example.platform.Service.UsersService;
 import com.example.platform.dto.UsersDto;
 import com.example.platform.model.Users;
 import com.example.platform.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,21 +17,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 @CrossOrigin(origins = "http://localhost:3000") // React portu
 public class UsersController {
 
-    @Autowired
-    private UsersService usersService;
-    @Autowired
-    private JwtUtil jwtUtil;
-    private AuthenticationManager authenticationManager;
-    public UsersController(AuthenticationManager authenticationManager)
-    {
-        this.authenticationManager=authenticationManager;
-    }
+    private final UsersService usersService;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+
 
     // Kayıt endpointi
     @PostMapping("/register")

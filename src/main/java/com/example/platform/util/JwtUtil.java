@@ -4,6 +4,7 @@ package com.example.platform.util;
 import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -14,8 +15,19 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "jC98qMCydqN1VfM0xgS9DQ1+oOaUYgAq1eCv5wlNc1A=";
-    public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10* 10; // 10 saat
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    @Value("${jwt.expiration}")
+    private long expirationTime;
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public long getExpirationTime() {
+        return expirationTime;
+    }
 
     // Token üretimi
     public String generateTokenWithApiKey(UUID apiKey, Platform platformTitle, Date issuedAt, Date expiresAt,List<String> role) {
@@ -26,8 +38,8 @@ public class JwtUtil {
                 .claim("platformId",platformTitle.getId())
                 .claim("role",role)
                 .setIssuedAt(new Date())       // oluşturulma zamanı
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // geçerlilik süresi
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes()) // imzalama
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // geçerlilik süresi
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes()) // imzalama
                 .compact();                    // token string'ini üret
     }
 
@@ -36,8 +48,8 @@ public class JwtUtil {
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
                 .compact();
     }
 
@@ -45,8 +57,8 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
                 .compact();
     }
 
@@ -62,7 +74,7 @@ public class JwtUtil {
     //Token'dan tüm claim'leri çıkar
     public Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(SECRET_KEY.getBytes())
+                .setSigningKey(secretKey.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
     }

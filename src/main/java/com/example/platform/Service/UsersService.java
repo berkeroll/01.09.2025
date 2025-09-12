@@ -6,6 +6,7 @@ import com.example.platform.model.Role;
 import com.example.platform.model.Users;
 import com.example.platform.util.JwtUtil;
 import com.fasterxml.jackson.annotation.OptBoolean;
+import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,16 +21,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 @Service
 public class UsersService implements UserDetailsService {
-@Autowired
-    private UsersRepository usersRepository;
-@Autowired
-    private JwtUtil jwtUtil;
-@Autowired
-    private RoleRepository roleRepository;
-private final BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+
+    private final UsersRepository usersRepository;
+    private final JwtUtil jwtUtil;
+    private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 
 //Kullanıcı Kaydı
 public Users registerUser(String username, String rawpassword, List<String > roleNames)

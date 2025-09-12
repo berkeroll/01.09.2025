@@ -11,31 +11,21 @@ import com.example.platform.model.Platform;
 import com.example.platform.Repository.PlatformRepository;
 import com.example.platform.util.JwtUtil;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 @Service
 public class PlatformService {
 
-    @Autowired
-    private CryptoRepository cryptoRepository;
 
-    @Autowired
+    private final CryptoRepository cryptoRepository;
     private final PlatformRepository platformRepository;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    InvestorRepository investorRepository;
-
-
-
-
-    public PlatformService(PlatformRepository platformRepository) {
-        this.platformRepository = platformRepository;
-    }
+    private final JwtUtil jwtUtil;
+   private final InvestorRepository investorRepository;
 
 
     public List<Platform> findGetAllStatus() {
