@@ -77,8 +77,8 @@ public class CryptoController {
             if (updatedCrypto.getCoinsCode() != null) {
                 crypto.setCoinsCode(updatedCrypto.getCoinsCode());
             }
-            if (updatedCrypto.getCoinsTax() != null) {
-                crypto.setCoinsTax(updatedCrypto.getCoinsTax());
+            if (updatedCrypto.getCoinsTax() != null&& !updatedCrypto.getCoinsTax().equals(crypto.getCoinsTax())) {
+                throw new IllegalArgumentException("taxNo değiştirilemez");
             }
             if (updatedCrypto.getStatus() != null) {
                 crypto.setStatus(updatedCrypto.getStatus());

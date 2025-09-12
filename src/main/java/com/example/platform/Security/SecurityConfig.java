@@ -42,8 +42,7 @@ public class SecurityConfig {
                                 "/api/platforms/v1/**",
                                 "/users/logintoken",
                                 "/users/logintoken2",
-                                "/users/login",
-                                "/api/investors/saveinvestor"
+                                "/users/login"
                         ).permitAll()
 
                         .anyRequest().authenticated()

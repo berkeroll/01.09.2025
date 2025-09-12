@@ -11,6 +11,7 @@ import com.example.platform.model.Investor;
 import com.example.platform.model.Platform;
 import com.example.platform.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -188,7 +189,7 @@ public class InvestorService {
         Optional<Investor> investorOpt = investorRepository.findById(id);
         if (investorOpt.isPresent()) {
             Investor investor = investorOpt.get();
-            if (investor.getState().equals("D")) {
+            if ("D".equals(investor.getState())) {
                 investor.setState("A");
                 investorRepository.save(investor);
             } else if (investor.getState().equals("A")) {
@@ -217,123 +218,25 @@ public class InvestorService {
 
 
 
-//    public Investor saveInvestor(Investor investor, String token) {
-//
-//        if (token == null || token.isEmpty()) {
-//            throw new RuntimeException("Token alınamadı");
-//        }
-//
-//        if (token.toLowerCase().startsWith("bearer ")) {
-//            token = token.substring(7).trim();
-//        } else {
-//            token = token.trim();
-//        }
-//
-//        if (jwtUtil.isTokenExpired(token)) {
-//            throw new RuntimeException("Token geçersiz veya süresi dolmuş");
-//        }
-//
-//        Long platformId = jwtUtil.extractPlatformId(token);
-//        Platform platform = platformRepository.findById(platformId)
-//                .orElseThrow(() -> new RuntimeException("Platform bulunamadı"));
-//        if (platform.getState() == false) {
-//            throw new IllegalArgumentException("Platform Pasif Durumda");
-//        }
-//        investor.setPlatformName(platform.getPlatformTitle());
-//
-//        String mernis = investor.getMernis();
-//        if (mernis != null) {
-//            mernis = mernis.trim();
-//        } else {
-//            throw new RuntimeException("Mernis bilgisi eksik");
-//        }
-//
-//        // Aynı mernis + platform kaydı var mı kontrol et
-//        if (investorRepository.existsByMernisAndPlatform(mernis, platform)) {
-//            throw new IllegalArgumentException(platform.getPlatformTitle() + " platformunda bu Mernis zaten kayıtlı.");
-//        }
-//
-//        // Sistemde aynı mernis ile herhangi bir kayıt var mı kontrol et
-//        Optional<Investor> existingInvestorOpt = investorRepository.findFirstByMernis(mernis);
-//
-//        if (existingInvestorOpt.isPresent()) {
-//            // Aynı mernis var, sicilNo'yu al, yeni kayıt oluştur platform ile birlikte
-//            Investor existingInvestor = existingInvestorOpt.get();
-//            if (!existingInvestor.getName().equals(investor.getName()) || !existingInvestor.getSurname().equals(investor.getSurname()))
-//            {
-//                throw new IllegalArgumentException("Bu merniste bu ad ve soyada sahip kullanıcı mevcut değiştirilemez.");
-//
-//            }
-//            investor.setSicilNo(existingInvestor.getSicilNo()); // Mevcut sicilNo'yu kullan
-//            investor.setPlatform(platform);
-//            investor.setMernis(mernis);
-//
-//            return investorRepository.save(investor);
-//
-//        } else {
-//            // Yeni mernis, yeni sicilNo üret ve kayıt oluştur
-//            investor.setPlatform(platform);
-//            investor.setSicilNo(generateUniqueSicilNo());
-//            investor.setMernis(mernis);
-//
-//            return investorRepository.save(investor);
-//        }
-//    }
-//    public ResponseEntity<?> checkInvestorByMernis(String mernis) {
-//        List<Investor> investors = investorRepository.findByMernis(mernis);
-//
-//        if (!investors.isEmpty()) {
-//            Investor firstInvestor = investors.get(0);
-//
-//
-//            InvestorDto response = new InvestorDto();
-//            response.setName(firstInvestor.getName());
-//            response.setSurname(firstInvestor.getSurname());
-//
-//            // Tüm platformları ekle
-//            List<PlatformDto> platformList = new ArrayList<>();
-//            for (Investor inv : investors) {
-//                Platform platform = inv.getPlatform();
-//                PlatformDto dto = new PlatformDto();
-//                dto.setId(platform.getId());
-//                dto.setPlatformTitle(platform.getPlatformTitle());
-//                platformList.add(dto);
-//            }
-//
-//            response.setPlatform(platformList);
-//
-//            return ResponseEntity.ok(response);
-//        }
-//
-//        return ResponseEntity.ok().body("Bu mernis ile investor bulunamadı");
-//    }
-
     public Investor saveInvestor(Investor investor,Long platformId) {
-
-
-
         Platform platform = platformRepository.findById(platformId)
                 .orElseThrow(() -> new RuntimeException("Platform bulunamadı"));
-        if (platform.getState() == false) {
+        if (!platform.getState()) {
             throw new IllegalArgumentException("Platform Pasif Durumda");
         }
         investor.setPlatformName(platform.getPlatformTitle());
-
         String mernis = investor.getMernis();
         if (mernis != null) {
             mernis = mernis.trim();
         } else {
             throw new RuntimeException("Mernis bilgisi eksik");
         }
-
         // Aynı mernis + platform kaydı var mı kontrol et
         if (investorRepository.existsByMernisAndPlatform(mernis, platform)) {
             throw new IllegalArgumentException(platform.getPlatformTitle() + " platformunda bu Mernis zaten kayıtlı.");
         }
-
         // Sistemde aynı mernis ile herhangi bir kayıt var mı kontrol et
         Optional<Investor> existingInvestorOpt = investorRepository.findFirstByMernis(mernis);
-
         if (existingInvestorOpt.isPresent()) {
             // Aynı mernis var, sicilNo'yu al, yeni kayıt oluştur platform ile birlikte
             Investor existingInvestor = existingInvestorOpt.get();
@@ -345,15 +248,12 @@ public class InvestorService {
             investor.setSicilNo(existingInvestor.getSicilNo()); // Mevcut sicilNo'yu kullan
             investor.setPlatform(platform);
             investor.setMernis(mernis);
-
             return investorRepository.save(investor);
-
         } else {
             // Yeni mernis, yeni sicilNo üret ve kayıt oluştur
             investor.setPlatform(platform);
             investor.setSicilNo(generateUniqueSicilNo());
             investor.setMernis(mernis);
-
             return investorRepository.save(investor);
         }
     }
@@ -362,12 +262,9 @@ public class InvestorService {
 
         if (!investors.isEmpty()) {
             Investor firstInvestor = investors.get(0);
-
-
             InvestorDto response = new InvestorDto();
             response.setName(firstInvestor.getName());
             response.setSurname(firstInvestor.getSurname());
-
             // Tüm platformları ekle
             List<PlatformDto> platformList = new ArrayList<>();
             for (Investor inv : investors) {
@@ -377,16 +274,12 @@ public class InvestorService {
                 dto.setPlatformTitle(platform.getPlatformTitle());
                 platformList.add(dto);
             }
-
             response.setPlatform(platformList);
-
             return ResponseEntity.ok(response);
         }
 
         return ResponseEntity.ok().body("Bu mernis ile investor bulunamadı");
     }
-
-
 
 
 

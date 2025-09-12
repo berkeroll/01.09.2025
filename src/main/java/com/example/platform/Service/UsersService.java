@@ -8,6 +8,7 @@ import com.example.platform.util.JwtUtil;
 import com.fasterxml.jackson.annotation.OptBoolean;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -53,17 +54,6 @@ return usersRepository.save(user);
 
 }
 
-public String loginAndGenerateTokenReact(String username,String rawpassword)
-{
-    Optional<Users> userOpt=usersRepository.findByUsername(username);
-
-    if (userOpt.isPresent()&& passwordEncoder.matches(rawpassword,userOpt.get().getPassword()))
-    {
-        return jwtUtil.generateTokenReact(username);
-    }
-    return null;
-
-}
 
     // Kullanıcı girişi
     public boolean checkLogin(String username, String rawPassword) {
@@ -76,17 +66,26 @@ public String loginAndGenerateTokenReact(String username,String rawpassword)
     }
 
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Users user=usersRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("Kullanıcı bulunamadı"+ username));
-        return new  org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .collect(Collectors.toList())
-        );
+@Override
+public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    }
+    Users user = usersRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
+
+    UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+            user.getUsername(),
+            user.getPassword(),
+            user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .collect(Collectors.toList())
+    );
+
+    return userDetails;
+}
+
+
+
+
+
 }

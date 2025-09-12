@@ -196,7 +196,7 @@ public class PlatformController {
             throw new IllegalArgumentException("taxNo değiştirilemez");
         }
 
-        // Manuel olarak alanları güncelle
+
         if (updatedDto.getPlatformTitle() != null) {
             platform.setPlatformTitle(updatedDto.getPlatformTitle());
         }
@@ -212,7 +212,7 @@ public class PlatformController {
             investorRepository.saveAll(investors);
         }
 
-        // Platform'u kaydet
+
         Platform savedPlatform = platformService.updatePlatform(platform);
 
         // DTO’ya çevir ve döndür

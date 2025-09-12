@@ -17,7 +17,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<TransactionRequestDto> executeTransaction(@RequestBody TransactionRequestDto request) {
 
-        // Service tarafında transaction oluşturuluyor
+
         Transaction transaction = transactionService.executeTransaction(
                 request.getPlatformId(),
                 request.getBuyerSicilNo(),

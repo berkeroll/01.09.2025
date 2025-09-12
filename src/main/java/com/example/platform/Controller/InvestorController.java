@@ -41,7 +41,7 @@ public class InvestorController {
         List<Investor> investors = investorService.findAll();
 
         List<InvestorDto> investorDtos = investors.stream()
-                .map(investorService::convertToInvestorDto) // Service içindeki dönüşüm metodunu kullanıyoruz
+                .map(investorService::convertToInvestorDto)
                 .collect(Collectors.toList());
 
         return investorDtos;
@@ -66,7 +66,6 @@ public class InvestorController {
                 .collect(Collectors.toList());
 
         return investorDtos;
-
 
     }
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
