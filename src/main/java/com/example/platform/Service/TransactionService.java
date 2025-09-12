@@ -80,8 +80,7 @@ public class TransactionService {
         return tx;
     }
 
-
-    @Transactional
+    
     public void updateInvestorWallet(Investor investor, Crypto crypto, BigDecimal amount) {
         InvestorWallet wallet = walletRepository.findByInvestorAndCrypto(investor, crypto)
                 .orElseGet(() -> {
